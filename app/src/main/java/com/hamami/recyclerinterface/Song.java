@@ -2,13 +2,13 @@ package com.hamami.recyclerinterface;
 
 import java.io.File;
 
-public class Songs {
+public class Song {
     private File fileSong;
     private String nameSong;
     private String SongLength;
 
     //constructor initializing values
-    Songs(File fileSong, String nameSong, String SongLength) {
+    Song(File fileSong, String nameSong, String SongLength) {
         this.fileSong = fileSong;
         this.nameSong = nameSong;
         this.SongLength = SongLength;

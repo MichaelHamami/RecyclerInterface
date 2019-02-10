@@ -4,6 +4,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -20,35 +21,39 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity{
 
     //recyclerview objects
-    private ArrayList<Songs> songsList = new ArrayList<>();
      RecyclerView recyclerView;
+    RecyclerView.Adapter adapter;
      TheAdapter songAdapter;
-    private ArrayList<File> mySongs;
-    //Other harta
+     ArrayList<File> mySongs;
+     MusicFragment musicFragment;
+
+    //Other
 
     private String rootis;
     private MediaPlayer mediaPlayer;
-    public static int currentPostion;
+
+    public static int currentPosition;
+    public static int resumePosition;
+
+    ArrayList<Song> songsList = new ArrayList<>();
 
     // fragment objects
+
+    TextView resumeOrPause;
     TextView moveNext;
+    TextView moveBack;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        currentPostion = 0;
+        currentPosition = 0;
+        resumePosition =0;
+
 //        //initializing views
         recyclerView = findViewById(R.id.recyclerView);
-
-        songAdapter = new TheAdapter(songsList,this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),linearLayoutManager.getOrientation());
-        recyclerView.addItemDecoration(dividerItemDecoration);
-        recyclerView.setLayoutManager(linearLayoutManager);
-//        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(songAdapter);
-        moveNext = findViewById(R.id.moveNext);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // get song files from Emulator
         rootis = " " + Environment.getExternalStorageDirectory().getName();
@@ -56,14 +61,29 @@ public class MainActivity extends AppCompatActivity{
 
         //loading list view item with this function
         loadRecyclerViewItem();
-//        currentPostion = recyclerView.getChildAdapterPosition(adapter.);
+
+
+        musicFragment = new MusicFragment();
+
+    //        Begin the transaction
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+// Replace the contents of the container with the new fragment
+        ft.replace(R.id.fragmentContainer, musicFragment);
+// or ft.add(R.id.your_placeholder, new FooFragment());
+//Complete the changes added above
+       ft.commit();
+
+        resumeOrPause = findViewById(R.id.resumeOrPause);
+        moveNext = findViewById(R.id.moveNext);
+        moveBack = findViewById(R.id.moveBackword);
 
         songAdapter.setOnItemClickListener(new TheAdapter.OnItemClickListener() {
+
             @Override
-            public void onItemClick(View v, Songs s, int position) {
+            public void onItemClick(View v, Song s, int position) {
                 stopPlayer();
                 playMusic(s.getFileSong());
-                currentPostion = position;
+                currentPosition = position;
             }
         });
         moveNext.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +91,35 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 stopPlayer();
-                ClickedNext(currentPostion);
+                ClickedNext(currentPosition);
+            }
+        });
+
+        moveBack.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                stopPlayer();
+                ClickedBack(currentPosition);
+            }
+        });
+
+        resumeOrPause.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if (mediaPlayer.isPlaying())
+                {
+                    resumePosition = mediaPlayer.getCurrentPosition();
+                    mediaPlayer.pause();
+                }
+
+                else
+                {
+                    mediaPlayer.seekTo(resumePosition);
+                    mediaPlayer.start();
+                }
             }
         });
 
@@ -97,13 +145,15 @@ public class MainActivity extends AppCompatActivity{
 //            you can fetch the data from server or some apis
 //            for this tutorial I am adding some dummy data directly
         for (int i = 0; i < mySongs.size(); i++) {
-            Songs song = new Songs(
+            Song song = new Song(
                     mySongs.get(i),
                     mySongs.get(i).getName(),
                     getTimeSong(mySongs.get(i))
             );
             songsList.add(song);
         }
+        songAdapter = new TheAdapter(songsList,this);
+        recyclerView.setAdapter(songAdapter);
         songAdapter.notifyDataSetChanged();
 
     }
@@ -173,7 +223,28 @@ public class MainActivity extends AppCompatActivity{
         }
         if (position >= songsList.size()-1) position = -1;
         mediaPlayer = MediaPlayer.create(this, Uri.parse(songsList.get(position+1).getFileSong().toString()));
-        currentPostion = position+1;
+        currentPosition = position+1;
+        Toast.makeText(this, "Media Player.create working?", Toast.LENGTH_SHORT).show();
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer)
+            {
+                stopPlayer();
+            }
+        });
+
+        mediaPlayer.start();
+    }
+    public void ClickedBack(int position)
+    {
+        Toast.makeText(this, "ClickedNext func running", Toast.LENGTH_SHORT).show();
+        if (mediaPlayer != null)
+        {
+            stopPlayer();
+        }
+        if (position <= 0) position = 1;
+        mediaPlayer = MediaPlayer.create(this, Uri.parse(songsList.get(position-1).getFileSong().toString()));
+        currentPosition = position-1;
         Toast.makeText(this, "Media Player.create working?", Toast.LENGTH_SHORT).show();
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override

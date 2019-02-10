@@ -16,40 +16,23 @@ import java.util.List;
 
 public class MusicFragment extends Fragment
 {
-    private static TextView PlayOrPause;
-    private static TextView moveNext;
-    private static TextView moveBack;
+    private OnItemSelectedListener listener;
 
-    Fragmentlistener infoToActivity;
-
-    public void SetFragmentlistener (Activity activity)
-    {
-        infoToActivity = (Fragmentlistener) activity;
+    // Define the events that the fragment will use to communicate
+    public interface OnItemSelectedListener {
+        // This can be any number of events to be sent to the activity
+        public void onRssItemSelected(String link);
     }
-
-    public interface Fragmentlistener {
-        public void ClickedNext(int currentPostion);
-    }
-
-
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        try {
-//
-//
-//        } catch (ClassCastException e)
-//        {
-//            throw new ClassCastException(context.toString());
-//        }
-//    }
+    public static  TextView PlayOrPause;
+    public static  TextView moveNext;
+    public static TextView moveBack;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.music_fragment,container,false);
-        PlayOrPause =  view.findViewById(R.id.PlayOrPause);
+
+        PlayOrPause =  view.findViewById(R.id.resumeOrPause);
         moveNext =  view.findViewById(R.id.moveNext);
         moveBack =  view.findViewById(R.id.moveBackword);
 
@@ -57,5 +40,12 @@ public class MusicFragment extends Fragment
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//        TextView PlayOrPause = (TextView) view.findViewById(R.id.resumeOrPause);
+//        TextView moveBackword = (TextView) view.findViewById(R.id.moveBackword);
+//        TextView moveNext = (TextView) view.findViewById(R.id.moveNext);
+    }
 }
 

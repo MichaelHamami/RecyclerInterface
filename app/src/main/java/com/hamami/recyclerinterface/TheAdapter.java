@@ -18,18 +18,18 @@ import java.util.List;
 
 public class TheAdapter extends RecyclerView.Adapter<TheAdapter.SongHolder> {
 
-    ArrayList<Songs> songsList;
+    ArrayList<Song> songsList;
     Context context;
     OnItemClickListener onItemClickListener;
 
-    public TheAdapter(ArrayList<Songs> songsList,Context context) {
+    public TheAdapter(ArrayList<Song> songsList,Context context) {
         this.context = context;
         this.songsList = songsList;
     }
 
     public interface OnItemClickListener
     {
-         void onItemClick(View v,Songs s,int position);
+         void onItemClick(View v,Song s,int position);
     }
     public void setOnItemClickListener(OnItemClickListener onItemClickListener)
     {
@@ -63,7 +63,7 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.SongHolder> {
 
     @Override
     public void onBindViewHolder(SongHolder songholder, final int position) {
-        final Songs song = songsList.get(position);
+        final Song song = songsList.get(position);
         songholder.textViewSongName.setText(song.getNameSong());
         songholder.textTimeSong.setText(song.getSongLength());
 

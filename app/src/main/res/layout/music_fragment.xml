@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:id="@+id/PlayOrPause"
+        android:id="@+id/resumeOrPause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Play/Pause"
@@ -16,7 +16,7 @@
         android:id="@+id/moveBackword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/PlayOrPause"
+        android:layout_toLeftOf="@+id/resumeOrPause"
         android:layout_marginRight="10dp"
         android:text="movebackword"
         android:textAppearance="?android:textAppearanceSmall"
@@ -25,7 +25,7 @@
         android:id="@+id/moveNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/PlayOrPause"
+        android:layout_toRightOf="@+id/resumeOrPause"
         android:layout_marginLeft="10dp"
         android:text="moveNext"
         android:textAppearance="?android:textAppearanceSmall"
