@@ -7,7 +7,6 @@ import android.os.Environment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -16,9 +15,9 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+
+public class MainActivity extends AppCompatActivity implements MusicFragment.MusicFragmentListener{
 
     //recyclerview objects
      RecyclerView recyclerView;
@@ -55,6 +54,8 @@ public class MainActivity extends AppCompatActivity{
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        musicFragment = new MusicFragment();
+
         // get song files from Emulator
         rootis = " " + Environment.getExternalStorageDirectory().getName();
         mySongs = findSongs(Environment.getExternalStorageDirectory());
@@ -62,67 +63,36 @@ public class MainActivity extends AppCompatActivity{
         //loading list view item with this function
         loadRecyclerViewItem();
 
-
-        musicFragment = new MusicFragment();
-
-    //        Begin the transaction
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-// Replace the contents of the container with the new fragment
-        ft.replace(R.id.fragmentContainer, musicFragment);
-// or ft.add(R.id.your_placeholder, new FooFragment());
-//Complete the changes added above
-       ft.commit();
-
-        resumeOrPause = findViewById(R.id.resumeOrPause);
-        moveNext = findViewById(R.id.moveNext);
-        moveBack = findViewById(R.id.moveBackword);
-
-        songAdapter.setOnItemClickListener(new TheAdapter.OnItemClickListener() {
+        songAdapter.setOnItemClickListener(new TheAdapter.AdapterListener() {
 
             @Override
-            public void onItemClick(View v, Song s, int position) {
+            public void onItemClick(View v, Song s, int position)
+            {
+                showFragment();
                 stopPlayer();
                 playMusic(s.getFileSong());
                 currentPosition = position;
             }
-        });
-        moveNext.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View v) {
-                stopPlayer();
-                ClickedNext(currentPosition);
+            public void onMenuDeleteClick(Song s, int position)
+            {
+                DeleteSong(s,position);
             }
         });
+    }
 
-        moveBack.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                stopPlayer();
-                ClickedBack(currentPosition);
-            }
-        });
-
-        resumeOrPause.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                if (mediaPlayer.isPlaying())
-                {
-                    resumePosition = mediaPlayer.getCurrentPosition();
-                    mediaPlayer.pause();
-                }
-
-                else
-                {
-                    mediaPlayer.seekTo(resumePosition);
-                    mediaPlayer.start();
-                }
-            }
-        });
-
+    private void DeleteSong(Song s, int position)
+    {
+        if (position >= 0)
+        {
+            songsList.remove(position);
+            songAdapter.notifyDataSetChanged();
+        }
+        else
+        {
+            Toast.makeText(this, "Can't Remove not a good position", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -255,5 +225,48 @@ public class MainActivity extends AppCompatActivity{
         });
 
         mediaPlayer.start();
+    }
+
+    @Override
+    public void playOrPause()
+    {
+        if (mediaPlayer.isPlaying())
+        {
+            resumePosition = mediaPlayer.getCurrentPosition();
+            mediaPlayer.pause();
+        }
+
+        else
+        {
+            mediaPlayer.seekTo(resumePosition);
+            mediaPlayer.start();
+        }
+    }
+
+    @Override
+    public void moveNext()
+    {
+        stopPlayer();
+        ClickedNext(currentPosition);
+    }
+
+    @Override
+    public void moveBack()
+    {
+        stopPlayer();
+        ClickedBack(currentPosition);
+    }
+    public void unShownFragment()
+    {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.hide(musicFragment);
+        ft.commit();
+    }
+    public void showFragment()
+    {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragmentContainer, musicFragment);
+        ft.show(musicFragment);
+        ft.commit();
     }
 }

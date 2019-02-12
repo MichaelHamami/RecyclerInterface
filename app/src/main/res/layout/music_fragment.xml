@@ -28,6 +28,15 @@
         android:layout_toRightOf="@+id/resumeOrPause"
         android:layout_marginLeft="10dp"
         android:text="moveNext"
-        android:textAppearance="?android:textAppearanceSmall"
+        android:textAppearance="?android:textAppearanceSmall"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/Button"
+            android:text="Check me"
+            android:layout_below="@+id/resumeOrPause"
+            android:layout_centerHorizontal="true"
+
         />
 </RelativeLayout>

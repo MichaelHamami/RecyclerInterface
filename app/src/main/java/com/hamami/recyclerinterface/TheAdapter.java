@@ -20,20 +20,21 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.SongHolder> {
 
     ArrayList<Song> songsList;
     Context context;
-    OnItemClickListener onItemClickListener;
+    AdapterListener adapterListener;
 
     public TheAdapter(ArrayList<Song> songsList,Context context) {
         this.context = context;
         this.songsList = songsList;
     }
 
-    public interface OnItemClickListener
+    public interface AdapterListener
     {
          void onItemClick(View v,Song s,int position);
+         void onMenuDeleteClick(Song s,int position);
     }
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener)
+    public void setOnItemClickListener(AdapterListener adapterListener)
     {
-        this.onItemClickListener = onItemClickListener;
+        this.adapterListener = adapterListener;
     }
 
     public class SongHolder extends RecyclerView.ViewHolder {
@@ -62,7 +63,7 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.SongHolder> {
     }
 
     @Override
-    public void onBindViewHolder(SongHolder songholder, final int position) {
+    public void onBindViewHolder(final SongHolder songholder, final int position) {
         final Song song = songsList.get(position);
         songholder.textViewSongName.setText(song.getNameSong());
         songholder.textTimeSong.setText(song.getSongLength());
@@ -73,18 +74,42 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.SongHolder> {
             {
                 // play the music
 //                Toast.makeText(context,song.getFileSong().toString(),Toast.LENGTH_LONG).show();
-                onItemClickListener.onItemClick(v,song,position);
+                adapterListener.onItemClick(v,song,position);
             }
         });
-//        songholder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(onItemClickListener != null)
-//                {
-//                    onItemClickListener.onItemClick(v,song,position);
-//                }
-//            }
-//        });
+        songholder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //creating a popup menu
+                PopupMenu popup = new PopupMenu(context, songholder.buttonViewOption);
+                //inflating menu from xml resource
+                popup.inflate(R.menu.options_menu);
+                //adding click listener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.playMenu:
+                                //handle menu1 click
+                                adapterListener.onItemClick(item.getActionView(),song,position);
+                                break;
+                            case R.id.deleteMenu:
+                                //handle menu2 click
+                                adapterListener.onMenuDeleteClick(song,position);
+                                break;
+                            case R.id.addToPlaylist:
+                                //handle menu3 click
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                //displaying the popup
+                popup.show();
+
+            }
+        });
 
     }
     @Override
